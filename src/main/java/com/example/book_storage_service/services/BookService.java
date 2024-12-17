@@ -17,12 +17,8 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public Optional<Book> booksByGenre(String genre){
-        return bookRepository.findByGenre(genre);
-    }
-
-    public Optional<Book> booksByAuthor(String author){
-        return bookRepository.findByAuthor(author);
+    public Optional<Book> bookByIsbn(String isbn){
+        return bookRepository.findByIsbn(isbn);
     }
 
     public Optional<Book> bookById(Long id){
