@@ -3,10 +3,9 @@ package com.example.book_storage_service.controllers;
 
 import com.example.book_storage_service.models.Book;
 import com.example.book_storage_service.services.BookService;
+import com.example.book_storage_service.services.ProducerService;
 import com.example.book_storage_service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +19,14 @@ public class MainController {
     final private UserService userService;
 
     @Autowired
+    final private ProducerService producerService;
+
+    @Autowired
     final private BookService bookService;
 
-    public MainController(UserService userService, BookService bookService) {
+    public MainController(UserService userService, ProducerService producerService, BookService bookService) {
         this.userService = userService;
+        this.producerService = producerService;
         this.bookService = bookService;
     }
 
@@ -47,6 +50,8 @@ public class MainController {
     @PostMapping("/book")
     public void addBook(@RequestBody Book book){
         bookService.addBook(book);
+
+        producerService.sendBookId("add-book-topic", book.getId().toString());
     }
 
     @PostMapping("/book/{id}")
@@ -62,12 +67,15 @@ public class MainController {
             bookService.addBook(newBook);
         },
         () -> {
-            System.out.println("While editing: book with id " + id +" have not found");
+            System.out.println("While editing: book with id " + id +" not found");
         });
     }
 
     @DeleteMapping("/book/{id}")
     public void deleteBook(@PathVariable(value = "id") Long id){
+
         bookService.deleteBookById(id);
+
+        producerService.sendBookId("delete-book-topic", id.toString());
     }
 }

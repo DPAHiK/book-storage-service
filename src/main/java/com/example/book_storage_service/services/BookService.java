@@ -39,7 +39,7 @@ public class BookService {
         book.ifPresentOrElse(b ->{
             bookRepository.deleteById(b.getId());
         }, ()->{
-            System.out.println("While deleting: book with id " + id +" have not found");
+            System.out.println("While deleting: book with id " + id +" not found");
         });
     }
 
