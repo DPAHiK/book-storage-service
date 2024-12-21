@@ -44,18 +44,21 @@ public class MainController {
 
     @GetMapping("/book/isbn/{isbn}")
     public Optional<Book> bookByIsbn(@PathVariable(value = "isbn") String isbn){
+
         return bookService.bookByIsbn(isbn);
     }
 
     @PostMapping("/book")
-    public void addBook(@RequestBody Book book){
+    public Book addBook(@RequestBody Book book){
         bookService.addBook(book);
 
         producerService.sendBookId("add-book-topic", book.getId().toString());
+
+        return book;
     }
 
-    @PostMapping("/book/{id}")
-    public void editBook(@RequestBody Book book, @PathVariable(value = "id") Long id){
+    @PutMapping("/book/{id}")
+    public Book editBook(@RequestBody Book book, @PathVariable(value = "id") Long id){
         Optional<Book> oldBook = bookService.bookById(id);
         oldBook.ifPresentOrElse(newBook -> {
             newBook.setAuthor(book.getAuthor());
@@ -69,13 +72,17 @@ public class MainController {
         () -> {
             System.out.println("While editing: book with id " + id +" not found");
         });
+
+        return book;
     }
 
     @DeleteMapping("/book/{id}")
-    public void deleteBook(@PathVariable(value = "id") Long id){
+    public boolean deleteBook(@PathVariable(value = "id") Long id){
 
-        bookService.deleteBookById(id);
+        boolean result = bookService.deleteBookById(id);
 
-        producerService.sendBookId("delete-book-topic", id.toString());
+        if(result) producerService.sendBookId("delete-book-topic", id.toString());
+
+        return  result;
     }
 }

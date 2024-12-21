@@ -33,14 +33,15 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    public void deleteBookById(Long id){
+    public boolean deleteBookById(Long id){
         Optional<Book> book = bookRepository.findById(id);
 
-        book.ifPresentOrElse(b ->{
-            bookRepository.deleteById(b.getId());
-        }, ()->{
-            System.out.println("While deleting: book with id " + id +" not found");
-        });
+        if(book.isPresent()){
+            bookRepository.deleteById(id);
+            return true;
+        }
+        System.out.println("While deleting: book with id " + id +" have not found");
+        return false;
     }
 
 
