@@ -3,11 +3,9 @@ package com.example.book_storage_service.controllers;
 import com.example.book_storage_service.models.AuthToken;
 import com.example.book_storage_service.models.User;
 import com.example.book_storage_service.repo.AuthTokenRepository;
-import com.example.book_storage_service.repo.UserRepository;
 import com.example.book_storage_service.response.AuthResponse;
 import com.example.book_storage_service.response.LoginRequest;
 import com.example.book_storage_service.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,13 +17,17 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthTokenRepository authTokenRepository;
+    final private AuthTokenRepository authTokenRepository;
 
-    @Autowired
-    private UserService userService;
+    final private UserService userService;
 
-    @Autowired private PasswordEncoder passwordEncoder;
+    final private PasswordEncoder passwordEncoder;
+
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder, AuthTokenRepository authTokenRepository) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.authTokenRepository = authTokenRepository;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {

@@ -4,8 +4,7 @@ package com.example.book_storage_service.controllers;
 import com.example.book_storage_service.models.Book;
 import com.example.book_storage_service.services.BookService;
 import com.example.book_storage_service.services.ProducerService;
-import com.example.book_storage_service.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,17 +14,12 @@ import java.util.Optional;
 @RestController
 public class MainController {
 
-    @Autowired
-    final private UserService userService;
 
-    @Autowired
     final private ProducerService producerService;
 
-    @Autowired
     final private BookService bookService;
 
-    public MainController(UserService userService, ProducerService producerService, BookService bookService) {
-        this.userService = userService;
+    public MainController(ProducerService producerService, BookService bookService) {
         this.producerService = producerService;
         this.bookService = bookService;
     }
@@ -49,18 +43,20 @@ public class MainController {
     }
 
     @PostMapping("/book")
-    public Book addBook(@RequestBody Book book){
+    public ResponseEntity<?> addBook(@RequestBody Book book){
         bookService.addBook(book);
 
         producerService.sendBookId("add-book-topic", book.getId().toString());
 
-        return book;
+        return ResponseEntity.ok("Book added");
     }
 
     @PutMapping("/book/{id}")
-    public Book editBook(@RequestBody Book book, @PathVariable(value = "id") Long id){
+    public ResponseEntity<?> editBook(@RequestBody Book book, @PathVariable(value = "id") Long id){
         Optional<Book> oldBook = bookService.bookById(id);
-        oldBook.ifPresentOrElse(newBook -> {
+        if(oldBook.isPresent()){
+            Book newBook = oldBook.get();
+
             newBook.setAuthor(book.getAuthor());
             newBook.setDescription(book.getDescription());
             newBook.setGenre(book.getGenre());
@@ -68,12 +64,13 @@ public class MainController {
             newBook.setTitle(book.getTitle());
 
             bookService.addBook(newBook);
-        },
-        () -> {
-            System.out.println("While editing: book with id " + id +" not found");
-        });
 
-        return book;
+            return ResponseEntity.ok("Book edited");
+        }
+            System.out.println("While editing: book with id " + id +" not found");
+
+
+        return ResponseEntity.status(404).body("Book with id " + id +" not found");
     }
 
     @DeleteMapping("/book/{id}")

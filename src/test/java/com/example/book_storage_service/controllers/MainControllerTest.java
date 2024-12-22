@@ -96,7 +96,7 @@ public class MainControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\":1,\"isbn\":\"123-456-789\",\"title\":\"Test Book\",\"author\":\"Test Author\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Test Book")));
+                .andExpect(content().string("Book added"));
 
         verify(bookService, times(1)).addBook(any(Book.class));
         verify(producerService, times(1)).sendBookId(eq("add-book-topic"), anyString());
@@ -110,7 +110,7 @@ public class MainControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\":1,\"isbn\":\"123-456-789\",\"title\":\"Edited Book\",\"author\":\"Edited Author\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Edited Book")));
+                .andExpect(content().string("Book edited"));
 
         verify(bookService, times(1)).bookById(1L);
         verify(bookService, times(1)).addBook(any(Book.class));

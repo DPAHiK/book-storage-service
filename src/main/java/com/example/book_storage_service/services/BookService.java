@@ -2,7 +2,6 @@ package com.example.book_storage_service.services;
 
 import com.example.book_storage_service.models.Book;
 import com.example.book_storage_service.repo.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.Optional;
 
 @Service
 public class BookService {
-    @Autowired
+
     final private BookRepository bookRepository;
 
     public BookService(BookRepository bookRepository) {
