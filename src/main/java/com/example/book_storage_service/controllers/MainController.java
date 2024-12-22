@@ -44,6 +44,8 @@ public class MainController {
 
     @PostMapping("/book")
     public ResponseEntity<?> addBook(@RequestBody Book book){
+        if(bookService.bookByIsbn(book.getIsbn()).isPresent()) return ResponseEntity.status(409).body("Book with ISBN" + book.getIsbn() + " already exists");
+
         bookService.addBook(book);
 
         producerService.sendBookId("add-book-topic", book.getId().toString());
@@ -53,6 +55,8 @@ public class MainController {
 
     @PutMapping("/book/{id}")
     public ResponseEntity<?> editBook(@RequestBody Book book, @PathVariable(value = "id") Long id){
+        if(bookService.bookByIsbn(book.getIsbn()).isPresent()) return ResponseEntity.status(409).body("Book with ISBN" + book.getIsbn() + " already exists");
+
         Optional<Book> oldBook = bookService.bookById(id);
         if(oldBook.isPresent()){
             Book newBook = oldBook.get();
