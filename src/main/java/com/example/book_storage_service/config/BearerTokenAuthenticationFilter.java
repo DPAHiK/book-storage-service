@@ -5,8 +5,8 @@ import com.example.book_storage_service.models.User;
 import com.example.book_storage_service.repo.AuthTokenRepository;
 import com.example.book_storage_service.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -36,14 +36,14 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
         String token = getTokenFromRequest(request);
-        //System.out.println(token);
+
         if (token != null) {
             Optional<AuthToken> authToken = authTokenRepository.findByToken(token);
             if (authToken.isPresent()) {
-                // Здесь вы можете загрузить пользователя из базы данных и установить его в контекст
+
                 Optional <User> userDetails = userRepository.findByName(authToken.get().getUsername());
                 if(userDetails.isPresent()){
                     UsernamePasswordAuthenticationToken authentication =
@@ -61,7 +61,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); // Удаляем "Bearer "
+            return bearerToken.substring(7);
         }
         return null;
     }

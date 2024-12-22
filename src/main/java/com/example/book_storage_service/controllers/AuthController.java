@@ -35,8 +35,8 @@ public class AuthController {
         if(user.isEmpty()) return ResponseEntity.status(404).body("Incorrect login or password");
         if(!passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) return ResponseEntity.status(404).body("Incorrect login or password");
 
-        // Если учетные данные верны, создайте токен
-        String token = generateToken(); // Генерация уникального токена
+
+        String token = generateToken();
         AuthToken authToken = new AuthToken();
         authToken.setToken(token);
         authToken.setUsername(loginRequest.getUsername());
@@ -74,7 +74,6 @@ public class AuthController {
     }
 
     private String generateToken() {
-        // Логика генерации уникального токена (например, UUID)
         return UUID.randomUUID().toString();
     }
 }
