@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MainControllerTest {
+public class BookControllerTest {
 
     @Mock
     private UserService userService;
@@ -38,14 +38,14 @@ public class MainControllerTest {
     private BookService bookService;
 
     @InjectMocks
-    private MainController mainController;
+    private BookController bookController;
 
     private MockMvc mockMvc;
     private Book book;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(mainController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(bookController).build();
 
         book = new Book();
         book.setId(1L);
