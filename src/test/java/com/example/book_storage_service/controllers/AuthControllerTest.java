@@ -75,8 +75,8 @@ public class AuthControllerTest {
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"unknownUser\",\"password\":\"password\"}"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Incorrect login or password"));
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("{\"status\":401,\"message\":\"Incorrect login or password\"}"));
 
         verify(authTokenRepository, times(0)).save(any(AuthToken.class));
     }
@@ -90,8 +90,8 @@ public class AuthControllerTest {
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"testUser\",\"password\":\"wrongPassword\"}"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Incorrect login or password"));
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().json("{\"status\":401,\"message\":\"Incorrect login or password\"}"));
 
         verify(authTokenRepository, times(0)).save(any(AuthToken.class));
     }
@@ -105,7 +105,7 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"newUser\",\"password\":\"password\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Successful registration"));
+                .andExpect(content().json("{\"status\":200,\"message\":\"Successful registration\"}"));
 
         verify(userService, times(1)).addUser(any(User.class));
     }
@@ -118,8 +118,8 @@ public class AuthControllerTest {
         mockMvc.perform(post("/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"testUser\",\"password\":\"password\"}"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("User with name testUser already exists"));
+                .andExpect(status().isConflict())
+                .andExpect(content().json("{\"status\":409,\"message\":\"User with name testUser already exists\"}"));
 
         verify(userService, times(0)).addUser(any(User.class));
     }
@@ -135,7 +135,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/auth/logout")
                         .header("Authorization", "Bearer validToken"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Logged out"));
+                .andExpect(content().json("{\"status\":200,\"message\":\"Logged out\"}"));
 
         verify(authTokenRepository, times(1)).deleteById(authToken.getId());
     }

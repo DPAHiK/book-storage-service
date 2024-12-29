@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BookControllerTest {
+public class MainControllerTest {
 
     @Mock
     private UserService userService;
@@ -60,8 +60,8 @@ public class BookControllerTest {
 
         mockMvc.perform(get("/book"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].title", is("Test Book")));
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data.[0].title", is("Test Book")));
 
         verify(bookService, times(1)).allBooks();
     }
@@ -72,7 +72,7 @@ public class BookControllerTest {
 
         mockMvc.perform(get("/book/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Test Book")));
+                .andExpect(jsonPath("$.data.title", is("Test Book")));
 
         verify(bookService, times(1)).bookById(1L);
     }
@@ -83,7 +83,7 @@ public class BookControllerTest {
 
         mockMvc.perform(get("/book/isbn/{isbn}", "123-456-789"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.isbn", is("123-456-789")));
+                .andExpect(jsonPath("$.data.isbn", is("123-456-789")));
 
         verify(bookService, times(1)).bookByIsbn("123-456-789");
     }
@@ -96,7 +96,7 @@ public class BookControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\":1,\"isbn\":\"123-456-789\",\"title\":\"Test Book\",\"author\":\"Test Author\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Book added"));
+                .andExpect(content().string("{\"status\":200,\"message\":\"Book added\"}"));
 
         verify(bookService, times(1)).addBook(any(Book.class));
         verify(producerService, times(1)).sendBookId(eq("add-book-topic"), anyString());
@@ -110,7 +110,7 @@ public class BookControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\":1,\"isbn\":\"123-456-789\",\"title\":\"Edited Book\",\"author\":\"Edited Author\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Book edited"));
+                .andExpect(content().json("{\"status\":200,\"message\":\"Book edited\"}"));
 
         verify(bookService, times(1)).bookById(1L);
         verify(bookService, times(1)).addBook(any(Book.class));
@@ -122,7 +122,7 @@ public class BookControllerTest {
 
         mockMvc.perform(delete("/book/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().json("{\"status\":200,\"deleted\":true}"));
 
         verify(bookService, times(1)).deleteBookById(1L);
         verify(producerService, times(1)).sendBookId(eq("delete-book-topic"), anyString());
