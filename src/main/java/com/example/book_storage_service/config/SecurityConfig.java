@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
@@ -32,7 +33,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                ;
+                .exceptionHandling(exceptionHandler -> exceptionHandler.authenticationEntryPoint((request, response, authenticationException) -> {
+                    response.getWriter().write("{\n\"code\": \"403\"\n\"message\": \"Authentication failed\"\n}");
+                }));
+
 
         return http.build();
     }
@@ -54,5 +58,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return new MyUserDetailsService();
     }
+
+
 
 }

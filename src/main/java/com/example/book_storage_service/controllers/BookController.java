@@ -88,11 +88,11 @@ public class BookController {
     }
 
     @DeleteMapping("/book/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable(value = "id") Long id){
+    public ResponseEntity<?> deleteBook(@PathVariable(value = "id") Long id) {
 
         boolean result = bookService.deleteBookById(id);
 
-        if(result) producerService.sendBookId("delete-book-topic", id.toString());
+        if (result) producerService.sendBookId("delete-book-topic", id.toString());
 
         return ResponseHandler.generateResponse(result ? HttpStatus.OK : HttpStatus.NOT_FOUND, "deleted", result);
     }
