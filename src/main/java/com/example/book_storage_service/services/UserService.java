@@ -1,6 +1,8 @@
 package com.example.book_storage_service.services;
 
 import com.example.book_storage_service.repo.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.book_storage_service.models.User;
@@ -10,6 +12,8 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     final private UserRepository userRepository;
 
@@ -43,7 +47,7 @@ public class UserService {
         user.ifPresentOrElse(u ->{
             userRepository.deleteById(u.getId());
         }, ()->{
-            System.out.println("While deleting: user with id " + id +" have not found");
+            logger.warn("While deleting: user with id {} have not found", id);
         });
     }
 

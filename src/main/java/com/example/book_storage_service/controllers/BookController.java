@@ -5,6 +5,8 @@ import com.example.book_storage_service.models.Book;
 import com.example.book_storage_service.response_and_request.ResponseHandler;
 import com.example.book_storage_service.services.BookService;
 import com.example.book_storage_service.services.ProducerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RestController
 public class BookController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
     final private ProducerService producerService;
 
@@ -81,7 +84,8 @@ public class BookController {
 
             return ResponseHandler.generateResponse(HttpStatus.OK, "message", "Book edited");
         }
-            System.out.println("While editing: book with id " + id +" not found");
+
+        logger.warn("While deleting: book with id {} not found", id);
 
 
         return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, "message", "Book with id " + id +" not found");
